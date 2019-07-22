@@ -29,7 +29,7 @@ describe('AzureActiveDirectoryGuard', () => {
     tokenValidateMock = jest.spyOn(service, 'isTokenValid');
     const incomingRequest: any = {
       headers: {
-        authtoken: 'Bearer 12345A',
+        authtoken: '12345A',
       },
     };
     executionContext = {
