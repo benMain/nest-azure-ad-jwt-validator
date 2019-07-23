@@ -22,11 +22,19 @@ export class AzureTokenValidationService {
     accessToken: string,
   ): Promise<AzureAdUser> {
     const keys = (await this.getAzureKeys()).keys;
-    const tokenHeader = this.getTokenHeader(accessToken);
+    let tokenHeader: TokenHeader;
+    try {
+      tokenHeader = this.getTokenHeader(accessToken);
+    } catch (err) {
+      this.logger.error(
+        `Unable to extract Header from AccessToken: ${accessToken} for error ${err.toString()}`,
+      );
+      return null;
+    }
     const key = keys.find(x => x.kid === tokenHeader.kid);
     if (!key) {
       this.logger.error(
-        `Unable to find Public Signing key matching kid(KeyId): ${key.kid}`,
+        `Unable to find Public Signing key matching Token Header kid(KeyId): ${tokenHeader.kid}`,
       );
       return null;
     }
