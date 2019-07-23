@@ -74,6 +74,13 @@ describe('AzureTokenValidationService', () => {
       const response = await service.isTokenValid(testToken);
       expect(response).toBeFalsy();
       expect(getTokensMock).toHaveBeenCalledTimes(1);
+      expect(verifyMock).toHaveBeenCalledTimes(1);
+    });
+    it('should return false on garbage token', async () => {
+      const response = await service.isTokenValid('fdae');
+      expect(response).toBeFalsy();
+      expect(getTokensMock).toHaveBeenCalledTimes(1);
+      expect(verifyMock).toHaveBeenCalledTimes(0);
     });
   });
   describe('getAzureUserFromToken()', () => {
