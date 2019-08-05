@@ -5,13 +5,18 @@ import { EOL } from 'os';
 
 @Injectable()
 export class AzureTokenValidationService {
+  private readonly serviceTokenEnvVariable = 'SERVICE_TOKEN';
   private readonly logger: Logger;
   constructor(private readonly httpService: HttpService) {
     this.logger = new Logger(AzureTokenValidationService.name);
   }
 
   async isTokenValid(accessToken: string): Promise<boolean> {
-    return !!(await this.extractUserFromToken(accessToken));
+    let isTokenValid = !!(await this.extractUserFromToken(accessToken));
+    if (!isTokenValid) {
+      isTokenValid = this.validateServiceToken(accessToken);
+    }
+    return isTokenValid;
   }
 
   async getAzureUserFromToken(accessToken: string): Promise<AzureAdUser> {
@@ -67,5 +72,15 @@ export class AzureTokenValidationService {
     const buffer = Buffer.from(tokenPart, 'base64');
     const decodedToken = buffer.toString('utf8');
     return JSON.parse(decodedToken) as TokenHeader;
+  }
+
+  private validateServiceToken(token: string): boolean {
+    this.logger.log('Attempting to validate service token...');
+    if (process.env[this.serviceTokenEnvVariable] === token) {
+      return true;
+    } else {
+      this.logger.error('Could not validate service token.');
+      return false;
+    }
   }
 }

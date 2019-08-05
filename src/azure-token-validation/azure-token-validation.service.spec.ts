@@ -63,22 +63,31 @@ describe('AzureTokenValidationService', () => {
   });
 
   describe('isTokenValid()', () => {
-    it('should validate a legit token', async () => {
+    it('should validate a legit Azure token', async () => {
       verifyMock.mockReturnValue(mockUser as any);
       const response = await service.isTokenValid(testToken);
       expect(response).toBeTruthy();
       expect(getTokensMock).toHaveBeenCalledTimes(1);
       expect(verifyMock).toHaveBeenCalledTimes(1);
     });
-    it('should return false on expired token', async () => {
+    it('should return false on expired Azure token and invalid service token', async () => {
+      process.env.SERVICE_TOKEN = 'invalid-service-token';
       const response = await service.isTokenValid(testToken);
       expect(response).toBeFalsy();
       expect(getTokensMock).toHaveBeenCalledTimes(1);
       expect(verifyMock).toHaveBeenCalledTimes(1);
     });
-    it('should return false on garbage token', async () => {
+    it('should return false on garbage Azure token and invalid service token', async () => {
+      process.env.SERVICE_TOKEN = 'invalid-service-token';
       const response = await service.isTokenValid('fdae');
       expect(response).toBeFalsy();
+      expect(getTokensMock).toHaveBeenCalledTimes(1);
+      expect(verifyMock).toHaveBeenCalledTimes(0);
+    });
+    it('should return true on invalid Azure token, but valid service token', async () => {
+      process.env.SERVICE_TOKEN = 'valid-service-token';
+      const response = await service.isTokenValid('valid-service-token');
+      expect(response).toBeTruthy();
       expect(getTokensMock).toHaveBeenCalledTimes(1);
       expect(verifyMock).toHaveBeenCalledTimes(0);
     });
