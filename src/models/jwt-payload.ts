@@ -14,6 +14,7 @@ export class JwtPayload {
   name: string;
   nonce: string;
   oid: string;
+  roles: string[];
   // tslint:disable-next-line: variable-name
   onprem_sid: string;
   sub: string;
