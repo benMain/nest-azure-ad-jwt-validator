@@ -5,7 +5,7 @@ export class JwtPayload {
   nbf: number;
   exp: number;
   aio: string;
-  amr: string;
+  amr: string[];
   // tslint:disable-next-line: variable-name
   family_name: string;
   // tslint:disable-next-line: variable-name
@@ -14,7 +14,7 @@ export class JwtPayload {
   name: string;
   nonce: string;
   oid: string;
-  roles: string[];
+  roles?: string[];
   // tslint:disable-next-line: variable-name
   onprem_sid: string;
   sub: string;

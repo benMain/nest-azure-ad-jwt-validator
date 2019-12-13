@@ -13,7 +13,15 @@ describe('AzureActiveDirectoryGuard', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AzureActiveDirectoryGuard,
-        AzureTokenValidationService,
+        {
+          provide: AzureTokenValidationService,
+          useValue: {
+            isTokenValid() {
+              return Promise.resolve();
+            },
+          },
+        },
+        // AzureTokenValidationService,
         {
           provide: HttpService,
           useValue: {
