@@ -2,18 +2,29 @@ import { AzureActiveDirectoryGuard } from './azure-active-directory.guard';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AzureTokenValidationService } from '../azure-token-validation';
 import { ExecutionContext, HttpService } from '@nestjs/common';
+import { AUDIENCE_TOKEN, TENANT_TOKEN } from '../constants';
 
 describe('AzureActiveDirectoryGuard', () => {
   let guard: AzureActiveDirectoryGuard;
   let service: AzureTokenValidationService;
   let tokenValidateMock: jest.SpyInstance<Promise<boolean>, [string]>;
   let executionContext: ExecutionContext;
+  const audienceToken = 'ff45a46b-5dc8-4f5e-ae2d-f92f978deade';
+  const tenantToken = '1f698e30-434c-4488-a068-fb417df97dc4';
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AzureActiveDirectoryGuard,
         AzureTokenValidationService,
+        {
+          provide: AUDIENCE_TOKEN,
+          useValue: audienceToken,
+        },
+        {
+          provide: TENANT_TOKEN,
+          useValue: tenantToken,
+        },
         {
           provide: HttpService,
           useValue: {

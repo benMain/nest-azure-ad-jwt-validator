@@ -17,6 +17,40 @@ Note: The exported guard expects the jwt(json web token) in an authtoken header 
 $ npm install --save nest-azure-ad-jwt-validator
 ```
 
+## Usage
+
+1. Import the module globally in your app module.
+2. Add the Exported Guard as a global guard or use the exported service
+
+```typescript
+import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import {
+  AzureActiveDirectoryGuard,
+  NestAzureAdJwtValidatorModule,
+} from 'nest-azure-ad-jwt-validator';
+
+@Module({
+  imports: [
+    NestAzureAdJwtValidatorModule.forRoot(
+      '63fca94a-4979-4ee1-b9cc-54569f68ccbf', // tenantId
+      '6747e462-323d-4fb7-b1e0-fe99531fe611', // applicationId
+    ),
+  ],
+  controllers: [AppController],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AzureActiveDirectoryGuard,
+    },
+  ],
+})
+export class AppModule {}
+```
+
 ## Test
 
 ```bash

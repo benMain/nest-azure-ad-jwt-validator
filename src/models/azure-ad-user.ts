@@ -1,8 +1,12 @@
 import { JwtPayload } from './jwt-payload';
 
 export class AzureAdUser {
-  email: string;
-  name: string;
+  readonly id: string;
+  readonly email: string;
+  readonly fullName: string;
+  readonly roles: string[];
+  readonly audience: string;
+  readonly tenant: string;
 
   constructor(jwt?: JwtPayload) {
     if (!jwt) {
@@ -10,6 +14,10 @@ export class AzureAdUser {
     }
 
     this.email = jwt.upn;
-    this.name = jwt.name;
+    this.fullName = jwt.name;
+    this.id = jwt.oid;
+    this.roles = jwt.roles;
+    this.audience = jwt.aud;
+    this.tenant = jwt.tid;
   }
 }

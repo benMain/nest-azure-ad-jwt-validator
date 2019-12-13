@@ -1,13 +1,18 @@
-import { Injectable, HttpService, Logger } from '@nestjs/common';
+import { Injectable, HttpService, Logger, Inject } from '@nestjs/common';
 import { verify } from 'jsonwebtoken';
 import { JwtPayload, JwtKey, AzureAdUser, TokenHeader } from '../models';
 import { EOL } from 'os';
+import { AUDIENCE_TOKEN, TENANT_TOKEN } from '../constants';
 
 @Injectable()
 export class AzureTokenValidationService {
   private readonly serviceTokenEnvVariable = 'SERVICE_TOKEN';
   private readonly logger: Logger;
-  constructor(private readonly httpService: HttpService) {
+  constructor(
+    private readonly httpService: HttpService,
+    @Inject(AUDIENCE_TOKEN) private readonly audience: string,
+    @Inject(TENANT_TOKEN) private readonly tenant: string,
+  ) {
     this.logger = new Logger(AzureTokenValidationService.name);
   }
 
@@ -32,7 +37,7 @@ export class AzureTokenValidationService {
       tokenHeader = this.getTokenHeader(accessToken);
     } catch (err) {
       this.logger.error(
-        `Unable to extract Header from AccessToken: ${accessToken} for error ${err.toString()}`,
+        `Unable to extract Header from AccessToken: ${accessToken} for issue ${err.toString()}`,
       );
       return null;
     }
@@ -46,7 +51,11 @@ export class AzureTokenValidationService {
     const publicKey = `-----BEGIN CERTIFICATE-----${EOL}${key.x5c[0]}${EOL}-----END CERTIFICATE-----`;
     try {
       const payload = this.verifyToken(accessToken, publicKey);
-      return new AzureAdUser(payload);
+      const user = new AzureAdUser(payload);
+      if (user.audience === this.audience && user.tenant === this.tenant) {
+        return user;
+      }
+      return null;
     } catch (err) {
       this.logger.error(
         `Unable to validate accessToken for reason ${err.toString()}`,
