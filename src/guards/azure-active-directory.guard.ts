@@ -1,7 +1,8 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { Observable } from 'rxjs';
+
 import { AzureTokenValidationService } from '../azure-token-validation';
 import { IncomingMessage } from 'http';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class AzureActiveDirectoryGuard implements CanActivate {

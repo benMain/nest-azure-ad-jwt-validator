@@ -1,7 +1,8 @@
-import { Module, HttpModule, Global, DynamicModule } from '@nestjs/common';
-import { AzureTokenValidationService } from './azure-token-validation/azure-token-validation.service';
-import { AzureActiveDirectoryGuard } from './guards/azure-active-directory.guard';
 import { AUDIENCE_TOKEN, TENANT_TOKEN } from './constants';
+import { DynamicModule, Global, HttpModule, Module } from '@nestjs/common';
+
+import { AzureActiveDirectoryGuard } from './guards/azure-active-directory.guard';
+import { AzureTokenValidationService } from './azure-token-validation/azure-token-validation.service';
 
 @Global()
 @Module({
