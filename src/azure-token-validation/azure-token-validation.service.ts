@@ -1,8 +1,9 @@
-import { Injectable, HttpService, Logger, Inject } from '@nestjs/common';
-import { verify } from 'jsonwebtoken';
-import { JwtPayload, JwtKey, AzureAdUser, TokenHeader } from '../models';
-import { EOL } from 'os';
 import { AUDIENCE_TOKEN, TENANT_TOKEN } from '../constants';
+import { AzureAdUser, JwtKey, JwtPayload, TokenHeader } from '../models';
+import { HttpService, Inject, Injectable, Logger } from '@nestjs/common';
+
+import { EOL } from 'os';
+import { verify } from 'jsonwebtoken';
 
 @Injectable()
 export class AzureTokenValidationService {
@@ -41,7 +42,7 @@ export class AzureTokenValidationService {
       );
       return null;
     }
-    const key = keys.find(x => x.kid === tokenHeader.kid);
+    const key = keys.find((x) => x.kid === tokenHeader.kid);
     if (!key) {
       this.logger.error(
         `Unable to find Public Signing key matching Token Header kid(KeyId): ${tokenHeader.kid}`,
@@ -65,11 +66,13 @@ export class AzureTokenValidationService {
   }
 
   private async getAzureKeys(): Promise<{ keys: JwtKey[] }> {
-    return (await this.httpService
-      .get<{ keys: JwtKey[] }>(
-        'https://login.microsoftonline.com/common/discovery/keys',
-      )
-      .toPromise()).data;
+    return (
+      await this.httpService
+        .get<{ keys: JwtKey[] }>(
+          'https://login.microsoftonline.com/common/discovery/keys',
+        )
+        .toPromise()
+    ).data;
   }
 
   private verifyToken(accessToken: string, key: string): JwtPayload {

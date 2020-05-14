@@ -1,11 +1,12 @@
+import { AUDIENCE_TOKEN, TENANT_TOKEN } from '../constants';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { JwtKey, JwtPayload } from '../models';
+import { Observable, Observer } from 'rxjs';
 import { Test, TestingModule } from '@nestjs/testing';
+
 import { AzureTokenValidationService } from './azure-token-validation.service';
 import { HttpService } from '@nestjs/common';
-import { JwtPayload, JwtKey } from '../models';
-import { Observable, Observer } from 'rxjs';
-import { AxiosResponse, AxiosRequestConfig } from 'axios';
 import { readFileSync } from 'fs';
-import { AUDIENCE_TOKEN, TENANT_TOKEN } from '../constants';
 
 interface AzureTokenValidationServicePrivate {
   verifyToken: () => JwtPayload;
