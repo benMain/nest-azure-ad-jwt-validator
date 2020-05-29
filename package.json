@@ -92,6 +92,10 @@
             {
               "type": "style",
               "release": "patch"
+            },
+            {
+              "type": "breaking",
+              "release": "major"
             }
           ],
           "parserOpts": {
