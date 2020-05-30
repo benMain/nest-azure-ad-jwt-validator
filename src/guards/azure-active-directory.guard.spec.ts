@@ -1,8 +1,9 @@
-import { AzureActiveDirectoryGuard } from './azure-active-directory.guard';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AzureTokenValidationService } from '../azure-token-validation';
-import { ExecutionContext, HttpService } from '@nestjs/common';
 import { AUDIENCE_TOKEN, TENANT_TOKEN } from '../constants';
+import { ExecutionContext, HttpService } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+
+import { AzureActiveDirectoryGuard } from './azure-active-directory.guard';
+import { AzureTokenValidationService } from '../azure-token-validation';
 
 describe('AzureActiveDirectoryGuard', () => {
   let guard: AzureActiveDirectoryGuard;

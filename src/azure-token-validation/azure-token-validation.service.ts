@@ -35,6 +35,9 @@ export class AzureTokenValidationService {
     let tokenHeader: TokenHeader;
     try {
       tokenHeader = this.getTokenHeader(accessToken);
+      if (!tokenHeader) {
+        return null;
+      }
     } catch (err) {
       this.logger.error(
         `Unable to extract Header from AccessToken: ${accessToken} for issue ${err.toString()}`,
@@ -77,6 +80,9 @@ export class AzureTokenValidationService {
   }
 
   private getTokenHeader(accessToken: string): TokenHeader {
+    if (!accessToken.includes('.')) {
+      return null;
+    }
     const tokenPart = accessToken.slice(0, accessToken.indexOf('.'));
     const buffer = Buffer.from(tokenPart, 'base64');
     const decodedToken = buffer.toString('utf8');
