@@ -1,8 +1,9 @@
-import { Injectable, HttpService, Logger, Inject } from '@nestjs/common';
-import { verify } from 'jsonwebtoken';
-import { JwtPayload, JwtKey, AzureAdUser, TokenHeader } from '../models';
-import { EOL } from 'os';
 import { AUDIENCE_TOKEN, TENANT_TOKEN } from '../constants';
+import { AzureAdUser, JwtKey, JwtPayload, TokenHeader } from '../models';
+import { HttpService, Inject, Injectable, Logger } from '@nestjs/common';
+
+import { EOL } from 'os';
+import { verify } from 'jsonwebtoken';
 
 @Injectable()
 export class AzureTokenValidationService {

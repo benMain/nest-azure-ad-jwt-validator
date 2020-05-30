@@ -45,6 +45,7 @@ describe('AzureActiveDirectoryGuard', () => {
       },
     };
     executionContext = {
+      getType: () => null,
       getClass: () => null,
       getHandler: () => null,
       getArgByIndex: () => null,
