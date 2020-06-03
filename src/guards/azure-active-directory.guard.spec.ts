@@ -1,9 +1,11 @@
 import { AUDIENCE_TOKEN, TENANT_TOKEN } from '../constants';
-import { ExecutionContext, HttpService } from '@nestjs/common';
+import { ExecutionContext, HttpService, SetMetadata } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { AzureActiveDirectoryGuard } from './azure-active-directory.guard';
 import { AzureTokenValidationService } from '../azure-token-validation';
+
+export const Roles = (...roles: string[]) => SetMetadata('roles', roles);
 
 describe('AzureActiveDirectoryGuard', () => {
   let guard: AzureActiveDirectoryGuard;
@@ -46,8 +48,8 @@ describe('AzureActiveDirectoryGuard', () => {
     };
     executionContext = {
       getType: () => null,
-      getClass: () => null,
       getHandler: () => null,
+      getClass: () => null,
       getArgByIndex: () => null,
       getArgs: () => null,
       switchToRpc: () => null,
