@@ -1,20 +1,40 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 
 import { AzureTokenValidationService } from '../azure-token-validation';
 import { IncomingMessage } from 'http';
-import { Observable } from 'rxjs';
+import { Reflector } from '@nestjs/core';
 
 @Injectable()
 export class AzureActiveDirectoryGuard implements CanActivate {
+  private readonly logger = new Logger(AzureActiveDirectoryGuard.name);
   constructor(
+    private reflector: Reflector,
     private readonly tokenValidationService: AzureTokenValidationService,
   ) {}
 
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    const token = this.parseTokenFromContext(context);
-    return this.tokenValidationService.isTokenValid(token);
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const accessToken = this.parseTokenFromContext(context);
+    const isTokenValid = await this.tokenValidationService.isTokenValid(
+      accessToken,
+    );
+    // token is not valid exit
+    if (!isTokenValid) {
+      return false;
+    }
+    const roles = this.reflector.get('roles', context.getHandler());
+    // no roles and token is valid return success
+    if (!roles) {
+      return true;
+    }
+    const user = await this.tokenValidationService.getAzureUserFromToken(
+      accessToken,
+    );
+    return this.matchRoles(roles, user.roles);
   }
 
   private parseTokenFromContext(context: ExecutionContext): string {
@@ -24,5 +44,15 @@ export class AzureActiveDirectoryGuard implements CanActivate {
       .trim()
       .split(' ')
       .pop();
+  }
+
+  private matchRoles(roles: string[], usersRoles: string[]) {
+    const userRolesLower = usersRoles.map((key) => key.toLowerCase());
+    for (const role of roles) {
+      if (userRolesLower.includes(role.toLowerCase())) {
+        return true;
+      }
+    }
+    return false;
   }
 }

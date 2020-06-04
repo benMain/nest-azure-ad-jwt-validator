@@ -36,13 +36,16 @@ export class AzureTokenValidationService {
     let tokenHeader: TokenHeader;
     try {
       tokenHeader = this.getTokenHeader(accessToken);
+      if (!tokenHeader) {
+        return null;
+      }
     } catch (err) {
       this.logger.error(
         `Unable to extract Header from AccessToken: ${accessToken} for issue ${err.toString()}`,
       );
       return null;
     }
-    const key = keys.find(x => x.kid === tokenHeader.kid);
+    const key = keys.find((x) => x.kid === tokenHeader.kid);
     if (!key) {
       this.logger.error(
         `Unable to find Public Signing key matching Token Header kid(KeyId): ${tokenHeader.kid}`,
@@ -66,11 +69,13 @@ export class AzureTokenValidationService {
   }
 
   private async getAzureKeys(): Promise<{ keys: JwtKey[] }> {
-    return (await this.httpService
-      .get<{ keys: JwtKey[] }>(
-        'https://login.microsoftonline.com/common/discovery/keys',
-      )
-      .toPromise()).data;
+    return (
+      await this.httpService
+        .get<{ keys: JwtKey[] }>(
+          'https://login.microsoftonline.com/common/discovery/keys',
+        )
+        .toPromise()
+    ).data;
   }
 
   private verifyToken(accessToken: string, key: string): JwtPayload {
@@ -78,6 +83,9 @@ export class AzureTokenValidationService {
   }
 
   private getTokenHeader(accessToken: string): TokenHeader {
+    if (!accessToken.includes('.')) {
+      return null;
+    }
     const tokenPart = accessToken.slice(0, accessToken.indexOf('.'));
     const buffer = Buffer.from(tokenPart, 'base64');
     const decodedToken = buffer.toString('utf8');
