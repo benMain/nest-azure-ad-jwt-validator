@@ -119,6 +119,27 @@ Note: Azure Roles have not been setup an a `@Controller` level that will require
 
 Note: If the role does not exist on the role, no roles are checked and everything proceeds as if there are no roles.
 
+Note: If you are assigning users to appRoles via Azure Groups then you need to change the manifest
+
+```json
+"groupMembershipClaims": null,
+```
+
+To
+
+```json
+"groupMembershipClaims": "All", # or “SecurityGroups”
+```
+
+In addition you cannot nest security groups, so you cannot take an existing group and add it to the group assigned to the appRole.
+
+Example:
+appRole: 'Admin'
+User: 'test@domain.com'
+AD Groups: 'AD-TEST-UI-UG'
+
+Either add ADGroups to the appRole or add the user to the appRole. You cannot add the AD Group 'AD-TEST-UI-UG' to another AD Group superset ('AD-TEST-UI-SUPERSET-UG') group. 'AD-TEST-UI-SUPERSET-UG' would never show roles.
+
 ## Test
 
 ```bash
