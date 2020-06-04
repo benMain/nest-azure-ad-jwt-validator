@@ -30,6 +30,7 @@ describe('AzureTokenValidationService', () => {
     name: 'Benjamin Main',
     upn: ' bmain@lumeris.com',
     oid: '2ccce435-038d-4ec9-9cd7-85b2df5e39f8',
+    roles: null,
     aud: audienceToken,
     tid: tenantToken,
     iss: `https://sts.windows.net/${tenantToken}/`,

@@ -23,15 +23,14 @@ $ npm install --save nest-azure-ad-jwt-validator
 2. Add the Exported Guard as a global guard or use the exported service
 
 ```typescript
-import { Module } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import {
   AzureActiveDirectoryGuard,
   NestAzureAdJwtValidatorModule,
 } from 'nest-azure-ad-jwt-validator';
-
+import { APP_GUARD } from '@nestjs/core';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { Module } from '@nestjs/common';
 @Module({
   imports: [
     NestAzureAdJwtValidatorModule.forRoot(
@@ -50,6 +49,75 @@ import {
 })
 export class AppModule {}
 ```
+
+## Azure Roles
+
+1.
+
+To use azure roles go to portal.azure.com -> search for App Registrations -> find your app -> edit manifest
+
+Add your roles to the manifest, the id's should be different Guids:
+
+```json
+{
+	"id": "xxxx-xxxx-xx-xxxx-xxxxxxx",
+	...
+	"appRoles": [
+		{
+			"allowedMemberTypes": [
+				"User"
+			],
+			"description": "Admin Users",
+			"displayName": "Admin",
+			"id": "xxxxx-xxxx-xxx-xxx-xxxxxx",
+			"isEnabled": true,
+			"lang": null,
+			"origin": "Application",
+			"value": "Admin"
+		},
+		{
+			"allowedMemberTypes": [
+				"User"
+			],
+			"description": "Finance Users have the ability to update finance data.",
+			"displayName": "FinanceUsers",
+			"id": "xxxxxx-xxx-xxxx-xxxx-xxxxxx2",
+			"isEnabled": true,
+			"lang": null,
+			"origin": "Application",
+			"value": "FinanceUsers"
+    },
+    ...
+	],
+	"oauth2AllowUrlPathMatching": false,
+	...
+}
+```
+
+2.
+
+Next go to Enterprise Applications -> search for your app and click on it for details -> Users and Groups (or Assign Users and Groups) -> Add User -> Here you pick azure ad users or groups and put them into the App Roles
+
+3.
+
+Now that Azure roles are setup and returned in the token, roles can be added to the application under the routes such as
+
+```ts
+import { Controller, Get } from '@nestjs/common';
+import { Roles } from 'nest-azure-ad-jwt-validator';
+@Controller('test')
+export class TestController {
+  @Get('')
+  @Roles('admin', 'finance')
+  get getTest() {
+    return 'success';
+  }
+}
+```
+
+Note: Azure Roles have not been setup an a `@Controller` level that will require a code change to `context.getHandler()` -> `context.getClass()`
+
+Note: If the role does not exist on the role, no roles are checked and everything proceeds as if there are no roles.
 
 ## Test
 
