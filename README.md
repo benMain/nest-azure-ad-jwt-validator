@@ -131,7 +131,7 @@ To
 "groupMembershipClaims": "All", # or “SecurityGroups”
 ```
 
-In addition you cannot nest security groups, so you cannot take an existing group and add it to the group assigned to the appRole.
+In addition you cannot nest security groups, so [you cannot take an existing group and add it to the group assigned to the appRole](https://stackoverflow.com/questions/27633510/assign-nested-group-to-role-in-azure-ad-applications-users-and-groups).
 
 Example:
 appRole: 'Admin'
@@ -139,6 +139,14 @@ User: 'test@domain.com'
 AD Groups: 'AD-TEST-UI-UG'
 
 Either add ADGroups to the appRole or add the user to the appRole. You cannot add the AD Group 'AD-TEST-UI-UG' to another AD Group superset ('AD-TEST-UI-SUPERSET-UG') group. 'AD-TEST-UI-SUPERSET-UG' would never show roles.
+
+## Commit Messages
+
+Commit messages should follow the [semantic commit message by angular(https://nitayneeman.com/posts/understanding-semantic-commit-messages-using-git-and-angular/)
+
+```bash
+git commit -am "fix(roles): add service token except to roles authorization" -m "The roles authorization should not run when the service now token is used because the service token is used when the application has no auth mechanism. Add warning message if user's roles does not match expected role" -m "PR Close #13"
+```
 
 ## Test
 
