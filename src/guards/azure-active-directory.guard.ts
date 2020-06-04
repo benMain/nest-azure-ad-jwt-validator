@@ -19,21 +19,25 @@ export class AzureActiveDirectoryGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const accessToken = this.parseTokenFromContext(context);
-    const isTokenValid = await this.tokenValidationService.isTokenValid(
-      accessToken,
-    );
+    const [
+      isTokenValid,
+      user,
+      isServiceToken,
+    ] = await this.tokenValidationService.isTokenValid(accessToken);
     // token is not valid exit
     if (!isTokenValid) {
       return false;
     }
-    const roles = this.reflector.get('roles', context.getHandler());
+    // token is valid, but it is a service token, no roles
+    if (isServiceToken) {
+      return true;
+    }
+    // token is valid, and token is a user
+    const roles = this.reflector.get<string[]>('roles', context.getHandler());
     // no roles and token is valid return success
     if (!roles) {
       return true;
     }
-    const user = await this.tokenValidationService.getAzureUserFromToken(
-      accessToken,
-    );
     return this.matchRoles(roles, user.roles);
   }
 
@@ -53,6 +57,7 @@ export class AzureActiveDirectoryGuard implements CanActivate {
         return true;
       }
     }
+    this.logger.warn('403 Permission Denied: User not in routes role.');
     return false;
   }
 }
