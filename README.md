@@ -140,6 +140,10 @@ AD Groups: 'AD-TEST-UI-UG'
 
 Either add ADGroups to the appRole or add the user to the appRole. You cannot add the AD Group 'AD-TEST-UI-UG' to another AD Group superset ('AD-TEST-UI-SUPERSET-UG') group. 'AD-TEST-UI-SUPERSET-UG' would never show roles.
 
+Also:
+[Vote for this Feature](https://feedback.azure.com/forums/169401-azure-active-directory/suggestions/)15718164-add-support-for-nested-groups-in-azure-ad-app-acc
+[In the Important section](https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/groups-saasapps)
+
 ## Commit Messages
 
 Commit messages should follow the [semantic commit message by angular(https://nitayneeman.com/posts/understanding-semantic-commit-messages-using-git-and-angular/)
