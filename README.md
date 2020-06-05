@@ -119,6 +119,39 @@ Note: Azure Roles have not been setup an a `@Controller` level that will require
 
 Note: If the role does not exist on the role, no roles are checked and everything proceeds as if there are no roles.
 
+Note: If you are assigning users to appRoles via Azure Groups then you need to change the manifest
+
+```json
+"groupMembershipClaims": null,
+```
+
+To
+
+```json
+"groupMembershipClaims": "All", # or “SecurityGroups”
+```
+
+In addition you cannot nest security groups, so [you cannot take an existing group and add it to the group assigned to the appRole](https://stackoverflow.com/questions/27633510/assign-nested-group-to-role-in-azure-ad-applications-users-and-groups).
+
+Example:
+appRole: 'Admin'
+User: 'test@domain.com'
+AD Groups: 'AD-TEST-UI-UG'
+
+Either add ADGroups to the appRole or add the user to the appRole. You cannot add the AD Group 'AD-TEST-UI-UG' to another AD Group superset ('AD-TEST-UI-SUPERSET-UG') group. 'AD-TEST-UI-SUPERSET-UG' would never show roles.
+
+Also:
+[Vote for this Feature](https://feedback.azure.com/forums/169401-azure-active-directory/suggestions/)15718164-add-support-for-nested-groups-in-azure-ad-app-acc
+[In the Important section](https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/groups-saasapps)
+
+## Commit Messages
+
+Commit messages should follow the [semantic commit message by angular(https://nitayneeman.com/posts/understanding-semantic-commit-messages-using-git-and-angular/)
+
+```bash
+git commit -am "fix(roles): add service token except to roles authorization" -m "The roles authorization should not run when the service now token is used because the service token is used when the application has no auth mechanism. Add warning message if user's roles does not match expected role" -m "PR Close #13"
+```
+
 ## Test
 
 ```bash
