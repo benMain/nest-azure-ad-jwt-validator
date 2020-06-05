@@ -1,6 +1,7 @@
 import { APP_GUARD, Reflector } from '@nestjs/core';
 import { AUDIENCE_TOKEN, TENANT_TOKEN } from '../constants';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { AzureAdUser, JwtKey, JwtPayload } from '../models';
 import {
   Controller,
   ExecutionContext,
@@ -10,7 +11,6 @@ import {
   Module,
   SetMetadata,
 } from '@nestjs/common';
-import { JwtKey, JwtPayload } from '../models';
 import { Observable, Observer } from 'rxjs';
 import { Test, TestingModule } from '@nestjs/testing';
 
@@ -31,7 +31,10 @@ describe('AzureActiveDirectoryGuard', () => {
   let httpService: HttpService;
   let reflector: Reflector;
 
-  let tokenValidateMock: jest.SpyInstance<Promise<boolean>, [string]>;
+  let tokenValidateMock: jest.SpyInstance<
+    Promise<[boolean, AzureAdUser, boolean]>,
+    [string]
+  >;
   let getAzureUserFromTokenMock: jest.SpyInstance;
   let getReflectorSpy: jest.SpyInstance;
   let getTokensMock: jest.SpyInstance;
@@ -141,15 +144,14 @@ describe('AzureActiveDirectoryGuard', () => {
   });
   describe('canActivate()', () => {
     it('should activate for valid token no roles', async () => {
-      tokenValidateMock.mockReturnValue(Promise.resolve(true));
+      tokenValidateMock.mockResolvedValue([true, mockUser as any, false]);
       const canActivate = await guard.canActivate(executionContext);
       expect(canActivate).toEqual(true);
       expect(tokenValidateMock).toHaveBeenCalledTimes(1);
       expect(tokenValidateMock).toHaveBeenCalledWith('12345A');
     });
     it('should activate for valid token with roles', async () => {
-      getAzureUserFromTokenMock.mockReturnValue(mockUser as any);
-      tokenValidateMock.mockReturnValue(Promise.resolve(true));
+      tokenValidateMock.mockResolvedValue([true, mockUser as any, false]);
       getReflectorSpy.mockReturnValue(['admin']);
       const canActivate = await guard.canActivate(executionContext);
       expect(canActivate).toEqual(true);
@@ -157,8 +159,7 @@ describe('AzureActiveDirectoryGuard', () => {
       expect(tokenValidateMock).toHaveBeenCalledWith('12345A');
     });
     it('should activate for valid token with invalid role', async () => {
-      getAzureUserFromTokenMock.mockReturnValue(mockUser as any);
-      tokenValidateMock.mockReturnValue(Promise.resolve(true));
+      tokenValidateMock.mockResolvedValue([true, mockUser as any, false]);
       getReflectorSpy.mockReturnValue(['fakeNotKnownRole']);
       const canActivate = await guard.canActivate(executionContext);
       expect(canActivate).toEqual(false);

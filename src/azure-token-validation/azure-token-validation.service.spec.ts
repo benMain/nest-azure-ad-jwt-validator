@@ -108,14 +108,18 @@ describe('AzureTokenValidationService', () => {
     });
     it('should return false on expired Azure token and invalid service token', async () => {
       process.env.SERVICE_TOKEN = 'invalid-service-token';
-      const response = await service.isTokenValid(testToken);
+      const [response, user, isServiceToken] = await service.isTokenValid(
+        testToken,
+      );
       expect(response).toBeFalsy();
       expect(getTokensMock).toHaveBeenCalledTimes(1);
       expect(verifyMock).toHaveBeenCalledTimes(1);
     });
     it('should return false on garbage Azure token and invalid service token', async () => {
       process.env.SERVICE_TOKEN = 'invalid-service-token';
-      const response = await service.isTokenValid('fdae');
+      const [response, user, isServiceToken] = await service.isTokenValid(
+        'fdae',
+      );
       expect(response).toBeFalsy();
       expect(getTokensMock).toHaveBeenCalledTimes(1);
       expect(verifyMock).toHaveBeenCalledTimes(0);
