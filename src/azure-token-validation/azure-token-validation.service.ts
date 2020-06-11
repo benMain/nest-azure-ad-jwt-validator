@@ -1,5 +1,6 @@
 import { AUDIENCE_TOKEN, TENANT_TOKEN } from '../constants';
 import { AzureAdUser, JwtKey, JwtPayload, TokenHeader } from '../models';
+import { DEBUG_LOGS_TOKEN } from '../constants';
 import { HttpService, Inject, Injectable, Logger } from '@nestjs/common';
 
 import { EOL } from 'os';
@@ -13,6 +14,7 @@ export class AzureTokenValidationService {
     private readonly httpService: HttpService,
     @Inject(AUDIENCE_TOKEN) private readonly audience: string,
     @Inject(TENANT_TOKEN) private readonly tenant: string,
+    @Inject(DEBUG_LOGS_TOKEN) private readonly enableDebugLogs: boolean,
   ) {
     this.logger = new Logger(AzureTokenValidationService.name);
   }
@@ -45,9 +47,11 @@ export class AzureTokenValidationService {
         return null;
       }
     } catch (err) {
-      this.logger.error(
-        `Unable to extract Header from AccessToken: ${accessToken} for issue ${err.toString()}`,
-      );
+      if (this.enableDebugLogs) {
+        this.logger.warn(
+          `Unable to extract Header from AccessToken: ${accessToken} for issue ${err.toString()}`,
+        );
+      }
       return null;
     }
     const key = keys.find((x) => x.kid === tokenHeader.kid);
@@ -142,11 +146,15 @@ export class AzureTokenValidationService {
   }
 
   private validateServiceToken(token: string): boolean {
-    this.logger.log('Attempting to validate service token...');
+    if (this.enableDebugLogs) {
+      this.logger.debug('Attempting to validate service token...');
+    }
     if (process.env[this.serviceTokenEnvVariable] === token) {
       return true;
     } else {
-      this.logger.error('Could not validate service token.');
+      if (this.enableDebugLogs) {
+        this.logger.warn('Could not validate service token.');
+      }
       return false;
     }
   }

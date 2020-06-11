@@ -1,6 +1,7 @@
 import {
   CanActivate,
   ExecutionContext,
+  Inject,
   Injectable,
   Logger,
 } from '@nestjs/common';
@@ -8,13 +9,15 @@ import {
 import { AzureTokenValidationService } from '../azure-token-validation';
 import { IncomingMessage } from 'http';
 import { Reflector } from '@nestjs/core';
+import { DEBUG_LOGS_TOKEN } from '../constants';
 
 @Injectable()
 export class AzureActiveDirectoryGuard implements CanActivate {
   private readonly logger = new Logger(AzureActiveDirectoryGuard.name);
   constructor(
-    private reflector: Reflector,
+    private readonly reflector: Reflector,
     private readonly tokenValidationService: AzureTokenValidationService,
+    @Inject(DEBUG_LOGS_TOKEN) private readonly enableDebugLogs: boolean,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -57,7 +60,9 @@ export class AzureActiveDirectoryGuard implements CanActivate {
         return true;
       }
     }
-    this.logger.warn('403 Permission Denied: User not in routes role.');
+    if (this.enableDebugLogs) {
+      this.logger.warn('403 Permission Denied: User not in routes role.');
+    }
     return false;
   }
 }
