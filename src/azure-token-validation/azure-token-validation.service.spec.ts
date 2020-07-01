@@ -1,4 +1,4 @@
-import { AUDIENCE_TOKEN, TENANT_TOKEN } from '../constants';
+import { AUDIENCE_TOKEN, DEBUG_LOGS_TOKEN, TENANT_TOKEN } from '../constants';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { JwtKey, JwtPayload } from '../models';
 import { Observable, Observer } from 'rxjs';
@@ -66,6 +66,10 @@ describe('AzureTokenValidationService', () => {
         {
           provide: TENANT_TOKEN,
           useValue: tenantToken,
+        },
+        {
+          provide: DEBUG_LOGS_TOKEN,
+          useValue: false,
         },
       ],
     }).compile();

@@ -7,9 +7,9 @@ import {
 } from '@nestjs/common';
 
 import { AzureTokenValidationService } from '../azure-token-validation';
+import { DEBUG_LOGS_TOKEN } from '../constants';
 import { IncomingMessage } from 'http';
 import { Reflector } from '@nestjs/core';
-import { DEBUG_LOGS_TOKEN } from '../constants';
 
 @Injectable()
 export class AzureActiveDirectoryGuard implements CanActivate {

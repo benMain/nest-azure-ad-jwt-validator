@@ -1,5 +1,5 @@
 import { APP_GUARD, Reflector } from '@nestjs/core';
-import { AUDIENCE_TOKEN, TENANT_TOKEN } from '../constants';
+import { AUDIENCE_TOKEN, DEBUG_LOGS_TOKEN, TENANT_TOKEN } from '../constants';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { AzureAdUser, JwtKey, JwtPayload } from '../models';
 import {
@@ -84,6 +84,10 @@ describe('AzureActiveDirectoryGuard', () => {
         {
           provide: TENANT_TOKEN,
           useValue: tenantToken,
+        },
+        {
+          provide: DEBUG_LOGS_TOKEN,
+          useValue: false,
         },
         {
           provide: HttpService,

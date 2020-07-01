@@ -1,8 +1,8 @@
 import { AUDIENCE_TOKEN, TENANT_TOKEN } from '../constants';
 import { AzureAdUser, JwtKey, JwtPayload, TokenHeader } from '../models';
-import { DEBUG_LOGS_TOKEN } from '../constants';
 import { HttpService, Inject, Injectable, Logger } from '@nestjs/common';
 
+import { DEBUG_LOGS_TOKEN } from '../constants';
 import { EOL } from 'os';
 import { verify } from 'jsonwebtoken';
 
