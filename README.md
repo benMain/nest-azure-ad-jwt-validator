@@ -36,6 +36,7 @@ import { Module } from '@nestjs/common';
     NestAzureAdJwtValidatorModule.forRoot(
       '63fca94a-4979-4ee1-b9cc-54569f68ccbf', // tenantId
       '6747e462-323d-4fb7-b1e0-fe99531fe611', // applicationId
+      false, //enable debug logs
     ),
   ],
   controllers: [AppController],
