@@ -15,7 +15,7 @@ export class NestAzureAdJwtValidatorModule {
   static forRoot(
     tenantId: string,
     applicationId: string,
-    enableDebugLogs?: boolean,
+    enableDebugLogs: boolean = false,
   ): DynamicModule {
     return {
       module: NestAzureAdJwtValidatorModule,
