@@ -32,6 +32,7 @@
     "build": "tsc -p tsconfig.build.json",
     "format": "prettier --write \"src/**/*.ts\"",
     "lint": "tslint -p tsconfig.json -c tslint.json",
+    "lint:fix": "node --max_old_space_size=8000 ./node_modules/tslint/bin/tslint -p tsconfig.json -c tslint.json --fix --force",
     "test": "jest",
     "test:cov": "jest --coverage",
     "release": "semantic-release",
