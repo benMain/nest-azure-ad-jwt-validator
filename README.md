@@ -36,7 +36,7 @@ import { Module } from '@nestjs/common';
     NestAzureAdJwtValidatorModule.forRoot(
       '63fca94a-4979-4ee1-b9cc-54569f68ccbf', // tenantId
       '6747e462-323d-4fb7-b1e0-fe99531fe611', // applicationId
-      false, //enable debug logs
+      false, // optional - enable debug logs, default false
     ),
   ],
   controllers: [AppController],
@@ -102,10 +102,54 @@ Next go to Enterprise Applications -> search for your app and click on it for de
 3.
 
 Now that Azure roles are setup and returned in the token, roles can be added to the application under the routes such as
+appmodule.ts
+
+```ts
+import {
+  AzureActiveDirectoryGuard,
+  NestAzureAdJwtValidatorModule,
+} from 'nest-azure-ad-jwt-validator';
+import { APP_GUARD } from '@nestjs/core';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { Module } from '@nestjs/common';
+@Module({
+  imports: [
+    NestAzureAdJwtValidatorModule.forRoot(
+      '63fca94a-4979-4ee1-b9cc-54569f68ccbf', // tenantId
+      '6747e462-323d-4fb7-b1e0-fe99531fe611', // applicationId
+      false, // optional - enable debug logs, default false
+    ),
+  ],
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule {}
+```
+
+controller.ts
+
+```ts
+import { Controller, Get } from '@nestjs/common';
+import { AzureActiveDirectoryGuard } from 'nest-azure-ad-jwt-validator';
+import { Roles } from 'nest-azure-ad-jwt-validator';
+@UseGuards(AzureActiveDirectoryGuard)
+@Controller('test')
+export class TestController {
+  @Get('')
+  @Roles('admin', 'finance')
+  get getTest() {
+    return 'success';
+  }
+}
+```
+
+Or if you do not wish to add the guard globally to all endpoints you can specify specific controllers to have the guard such as:
 
 ```ts
 import { Controller, Get } from '@nestjs/common';
 import { Roles } from 'nest-azure-ad-jwt-validator';
+
 @Controller('test')
 export class TestController {
   @Get('')

@@ -10,6 +10,7 @@ import { verify } from 'jsonwebtoken';
 export class AzureTokenValidationService {
   private readonly serviceTokenEnvVariable = 'SERVICE_TOKEN';
   private readonly logger: Logger;
+
   constructor(
     private readonly httpService: HttpService,
     @Inject(AUDIENCE_TOKEN) private readonly audience: string,

@@ -17,7 +17,7 @@ export class AzureActiveDirectoryGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     private readonly tokenValidationService: AzureTokenValidationService,
-    @Inject(DEBUG_LOGS_TOKEN) private readonly enableDebugLogs: boolean,
+    @Inject(DEBUG_LOGS_TOKEN) readonly enableDebugLogs: boolean,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
