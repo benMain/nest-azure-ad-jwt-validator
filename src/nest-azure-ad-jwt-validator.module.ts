@@ -35,7 +35,7 @@ export class NestAzureAdJwtValidatorModule {
           useValue: !!enableDebugLogs,
         },
       ],
-      exports: [AzureTokenValidationService, AzureActiveDirectoryGuard],
+      exports: [AzureTokenValidationService, AzureActiveDirectoryGuard, DEBUG_LOGS_TOKEN],
     };
   }
 }

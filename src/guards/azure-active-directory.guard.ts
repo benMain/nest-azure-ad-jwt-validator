@@ -17,6 +17,7 @@ export class AzureActiveDirectoryGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     private readonly tokenValidationService: AzureTokenValidationService,
+    @Inject(DEBUG_LOGS_TOKEN) readonly enableDebugLogs: boolean,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -59,7 +60,7 @@ export class AzureActiveDirectoryGuard implements CanActivate {
         return true;
       }
     }
-    if (this.tokenValidationService.enableDebugLogs) {
+    if (this.enableDebugLogs) {
       this.logger.warn('403 Permission Denied: User not in routes role.');
     }
     return false;

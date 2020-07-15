@@ -15,7 +15,7 @@ export class AzureTokenValidationService {
     private readonly httpService: HttpService,
     @Inject(AUDIENCE_TOKEN) private readonly audience: string,
     @Inject(TENANT_TOKEN) private readonly tenant: string,
-    @Inject(DEBUG_LOGS_TOKEN) readonly enableDebugLogs: boolean,
+    @Inject(DEBUG_LOGS_TOKEN) private readonly enableDebugLogs: boolean,
   ) {
     this.logger = new Logger(AzureTokenValidationService.name);
   }
