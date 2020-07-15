@@ -59,7 +59,7 @@ export class AzureActiveDirectoryGuard implements CanActivate {
         return true;
       }
     }
-    if (this.tokenValidationService.ENABLE_DEBUG_LOGS) {
+    if (this.tokenValidationService.enableDebugLogs) {
       this.logger.warn('403 Permission Denied: User not in routes role.');
     }
     return false;

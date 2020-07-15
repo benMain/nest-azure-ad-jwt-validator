@@ -11,16 +11,13 @@ export class AzureTokenValidationService {
   private readonly serviceTokenEnvVariable = 'SERVICE_TOKEN';
   private readonly logger: Logger;
 
-  ENABLE_DEBUG_LOGS: boolean;
-
   constructor(
     private readonly httpService: HttpService,
     @Inject(AUDIENCE_TOKEN) private readonly audience: string,
     @Inject(TENANT_TOKEN) private readonly tenant: string,
-    @Inject(DEBUG_LOGS_TOKEN) private readonly enableDebugLogs: boolean,
+    @Inject(DEBUG_LOGS_TOKEN) readonly enableDebugLogs: boolean,
   ) {
     this.logger = new Logger(AzureTokenValidationService.name);
-    this.ENABLE_DEBUG_LOGS = enableDebugLogs;
   }
 
   async isTokenValid(
@@ -51,7 +48,7 @@ export class AzureTokenValidationService {
         return null;
       }
     } catch (err) {
-      if (this.ENABLE_DEBUG_LOGS) {
+      if (this.enableDebugLogs) {
         this.logger.warn(
           `Unable to extract Header from AccessToken: ${accessToken} for issue ${err.toString()}`,
         );
@@ -150,13 +147,13 @@ export class AzureTokenValidationService {
   }
 
   private validateServiceToken(token: string): boolean {
-    if (this.ENABLE_DEBUG_LOGS) {
+    if (this.enableDebugLogs) {
       this.logger.debug('Attempting to validate service token...');
     }
     if (process.env[this.serviceTokenEnvVariable] === token) {
       return true;
     } else {
-      if (this.ENABLE_DEBUG_LOGS) {
+      if (this.enableDebugLogs) {
         this.logger.warn('Could not validate service token.');
       }
       return false;
