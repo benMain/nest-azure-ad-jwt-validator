@@ -115,11 +115,16 @@ import { AppService } from './app.service';
 import { Module } from '@nestjs/common';
 @Module({
   imports: [
-    NestAzureAdJwtValidatorModule.forRoot(
-      '63fca94a-4979-4ee1-b9cc-54569f68ccbf', // tenantId
-      '6747e462-323d-4fb7-b1e0-fe99531fe611', // applicationId
-      false, // optional - enable debug logs, default false
-    ),
+    NestAzureAdJwtValidatorModule.forRoot({
+      apps: [
+        {
+          tenantId: '63fca94a-4979-4ee1-b9cc-54169f68ccbf',
+          audienceId: '6747e462-323d-4fb7-b1e0-ef99531fe611',
+        },
+      ],
+      serviceTokens: ['random-string-generated-by-you'], // option - used to allow service-to-service communication, ala AWS x-api-key
+      enableDebugLogs: true, // optional - false by default
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
@@ -149,7 +154,6 @@ Or if you do not wish to add the guard globally to all endpoints you can specify
 ```ts
 import { Controller, Get } from '@nestjs/common';
 import { Roles } from 'nest-azure-ad-jwt-validator';
-
 @Controller('test')
 export class TestController {
   @Get('')

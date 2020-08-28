@@ -1,4 +1,3 @@
-import { AUDIENCE_TOKEN, DEBUG_LOGS_TOKEN, TENANT_TOKEN } from '../constants';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { JwtKey, JwtPayload } from '../models';
 import { Observable, Observer } from 'rxjs';
@@ -6,6 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { AzureTokenValidationService } from './azure-token-validation.service';
 import { HttpService } from '@nestjs/common';
+import { NestAzureAdJwtValidatorModuleOptions } from '../module-config';
 import { readFileSync } from 'fs';
 
 interface AzureTokenValidationServicePrivate {
@@ -60,16 +60,11 @@ describe('AzureTokenValidationService', () => {
           },
         },
         {
-          provide: AUDIENCE_TOKEN,
-          useValue: audienceToken,
-        },
-        {
-          provide: TENANT_TOKEN,
-          useValue: tenantToken,
-        },
-        {
-          provide: DEBUG_LOGS_TOKEN,
-          useValue: false,
+          provide: NestAzureAdJwtValidatorModuleOptions,
+          useValue: new NestAzureAdJwtValidatorModuleOptions({
+            apps: [{ tenantId: tenantToken, audienceId: audienceToken }],
+            enableDebugLogs: false,
+          }),
         },
       ],
     }).compile();

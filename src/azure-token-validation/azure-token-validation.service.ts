@@ -1,21 +1,17 @@
-import { AUDIENCE_TOKEN, TENANT_TOKEN } from '../constants';
 import { AzureAdUser, JwtKey, JwtPayload, TokenHeader } from '../models';
 import { HttpService, Inject, Injectable, Logger } from '@nestjs/common';
 
-import { DEBUG_LOGS_TOKEN } from '../constants';
 import { EOL } from 'os';
+import { NestAzureAdJwtValidatorModuleOptions } from '../module-config';
 import { verify } from 'jsonwebtoken';
 
 @Injectable()
 export class AzureTokenValidationService {
-  private readonly serviceTokenEnvVariable = 'SERVICE_TOKEN';
   private readonly logger: Logger;
 
   constructor(
     private readonly httpService: HttpService,
-    @Inject(AUDIENCE_TOKEN) private readonly audience: string,
-    @Inject(TENANT_TOKEN) private readonly tenant: string,
-    @Inject(DEBUG_LOGS_TOKEN) private readonly enableDebugLogs: boolean,
+    private readonly options: NestAzureAdJwtValidatorModuleOptions,
   ) {
     this.logger = new Logger(AzureTokenValidationService.name);
   }
@@ -48,7 +44,7 @@ export class AzureTokenValidationService {
         return null;
       }
     } catch (err) {
-      if (this.enableDebugLogs) {
+      if (this.options.enableDebugLogs) {
         this.logger.warn(
           `Unable to extract Header from AccessToken: ${accessToken} for issue ${err.toString()}`,
         );
@@ -66,10 +62,10 @@ export class AzureTokenValidationService {
     try {
       const payload = this.verifyToken(accessToken, publicKey);
       const user = new AzureAdUser(payload);
-      if (user.audience === this.audience && user.tenant === this.tenant) {
-        return user;
-      }
-      return null;
+      const matchingTenantApp = this.options.apps.some(
+        (a) => a.audienceId === user.audience && a.tenantId === user.tenant,
+      );
+      return matchingTenantApp ? user : null;
     } catch (err) {
       this.logger.error(
         `Unable to validate accessToken for reason ${err.toString()}`,
@@ -147,16 +143,18 @@ export class AzureTokenValidationService {
   }
 
   private validateServiceToken(token: string): boolean {
-    if (this.enableDebugLogs) {
+    if (this.options.enableDebugLogs) {
       this.logger.debug('Attempting to validate service token...');
     }
-    if (process.env[this.serviceTokenEnvVariable] === token) {
+
+    if (this.options.serviceTokens.includes(token)) {
       return true;
-    } else {
-      if (this.enableDebugLogs) {
-        this.logger.warn('Could not validate service token.');
-      }
-      return false;
     }
+
+    if (this.options.enableDebugLogs) {
+      this.logger.warn('Could not validate service token.');
+    }
+
+    return false;
   }
 }
