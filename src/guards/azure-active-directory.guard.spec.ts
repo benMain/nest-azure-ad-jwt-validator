@@ -1,5 +1,3 @@
-import { APP_GUARD, Reflector } from '@nestjs/core';
-import { AUDIENCE_TOKEN, DEBUG_LOGS_TOKEN, TENANT_TOKEN } from '../constants';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { AzureAdUser, JwtKey, JwtPayload } from '../models';
 import {
@@ -16,7 +14,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { AzureActiveDirectoryGuard } from './azure-active-directory.guard';
 import { AzureTokenValidationService } from '../azure-token-validation';
-import { NestAzureAdJwtValidatorModule } from '../nest-azure-ad-jwt-validator.module';
+import { NestAzureAdJwtValidatorModuleOptions } from '../module-config';
+import { Reflector } from '@nestjs/core';
 import { readFileSync } from 'fs';
 
 export const Roles = (...roles: string[]) => SetMetadata('roles', roles);
@@ -78,16 +77,11 @@ describe('AzureActiveDirectoryGuard', () => {
           },
         },
         {
-          provide: AUDIENCE_TOKEN,
-          useValue: audienceToken,
-        },
-        {
-          provide: TENANT_TOKEN,
-          useValue: tenantToken,
-        },
-        {
-          provide: DEBUG_LOGS_TOKEN,
-          useValue: false,
+          provide: NestAzureAdJwtValidatorModuleOptions,
+          useValue: new NestAzureAdJwtValidatorModuleOptions({
+            apps: [{ tenantId: tenantToken, audienceId: audienceToken }],
+            enableDebugLogs: false,
+          }),
         },
         {
           provide: HttpService,

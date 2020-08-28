@@ -7,8 +7,8 @@ import {
 } from '@nestjs/common';
 
 import { AzureTokenValidationService } from '../azure-token-validation';
-import { DEBUG_LOGS_TOKEN } from '../constants';
 import { IncomingMessage } from 'http';
+import { NestAzureAdJwtValidatorModuleOptions } from '../module-config';
 import { Reflector } from '@nestjs/core';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class AzureActiveDirectoryGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     private readonly tokenValidationService: AzureTokenValidationService,
-    @Inject(DEBUG_LOGS_TOKEN) readonly enableDebugLogs: boolean,
+    private readonly options: NestAzureAdJwtValidatorModuleOptions,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -27,20 +27,24 @@ export class AzureActiveDirectoryGuard implements CanActivate {
       user,
       isServiceToken,
     ] = await this.tokenValidationService.isTokenValid(accessToken);
+
     // token is not valid exit
     if (!isTokenValid) {
       return false;
     }
+
     // token is valid, but it is a service token, no roles
     if (isServiceToken) {
       return true;
     }
+
     // token is valid, and token is a user
     const roles = this.reflector.get<string[]>('roles', context.getHandler());
     // no roles and token is valid return success
     if (!roles) {
       return true;
     }
+
     return this.matchRoles(roles, user.roles);
   }
 
@@ -60,9 +64,11 @@ export class AzureActiveDirectoryGuard implements CanActivate {
         return true;
       }
     }
-    if (this.enableDebugLogs) {
+
+    if (this.options.enableDebugLogs) {
       this.logger.warn('403 Permission Denied: User not in routes role.');
     }
+
     return false;
   }
 }

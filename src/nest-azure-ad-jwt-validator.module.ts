@@ -1,8 +1,8 @@
-import { AUDIENCE_TOKEN, DEBUG_LOGS_TOKEN, TENANT_TOKEN } from './constants';
 import { DynamicModule, Global, HttpModule, Module } from '@nestjs/common';
 
 import { AzureActiveDirectoryGuard } from './guards/azure-active-directory.guard';
 import { AzureTokenValidationService } from './azure-token-validation/azure-token-validation.service';
+import { NestAzureAdJwtValidatorModuleOptions } from './module-config';
 
 @Global()
 @Module({
@@ -13,9 +13,7 @@ import { AzureTokenValidationService } from './azure-token-validation/azure-toke
 })
 export class NestAzureAdJwtValidatorModule {
   static forRoot(
-    tenantId: string,
-    applicationId: string,
-    enableDebugLogs: boolean = false,
+    options: Partial<NestAzureAdJwtValidatorModuleOptions>,
   ): DynamicModule {
     return {
       module: NestAzureAdJwtValidatorModule,
@@ -23,19 +21,15 @@ export class NestAzureAdJwtValidatorModule {
         AzureTokenValidationService,
         AzureActiveDirectoryGuard,
         {
-          provide: AUDIENCE_TOKEN,
-          useValue: applicationId,
-        },
-        {
-          provide: TENANT_TOKEN,
-          useValue: tenantId,
-        },
-        {
-          provide: DEBUG_LOGS_TOKEN,
-          useValue: !!enableDebugLogs,
+          provide: NestAzureAdJwtValidatorModuleOptions,
+          useValue: new NestAzureAdJwtValidatorModuleOptions(options),
         },
       ],
-      exports: [AzureTokenValidationService, AzureActiveDirectoryGuard, DEBUG_LOGS_TOKEN],
+      exports: [
+        AzureTokenValidationService,
+        AzureActiveDirectoryGuard,
+        NestAzureAdJwtValidatorModuleOptions,
+      ],
     };
   }
 }
