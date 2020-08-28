@@ -14,16 +14,14 @@ export class NestAzureAdJwtValidatorModuleOptions {
     if (!this.apps?.length) {
       this.apps = [];
     }
+    this.apps = this.apps.filter(x => !!x);
 
     if (!this.serviceTokens?.length) {
       this.serviceTokens = [];
     }
+    this.serviceTokens.push(process.env.SERVICE_TOKEN);
+    this.serviceTokens = this.serviceTokens.filter(x => !!x);
 
     this.enableDebugLogs = !!this.enableDebugLogs;
-
-    const defaultEnvServiceToken = process.env.SERVICE_TOKEN;
-    if (defaultEnvServiceToken?.length) {
-      this.serviceTokens.push(defaultEnvServiceToken);
-    }
   }
 }
