@@ -63,7 +63,9 @@ export class AzureTokenValidationService {
       const payload = this.verifyToken(accessToken, publicKey);
       const user = new AzureAdUser(payload);
       const matchingTenantApp = this.options.apps.some(
-        (a) => a.audienceId === user.audience && a.tenantId === user.tenant,
+        (a) =>
+          (a.audienceId === user.audience || a.audienceId === user.appId) &&
+          a.tenantId === user.tenant,
       );
       return matchingTenantApp ? user : null;
     } catch (err) {
@@ -121,7 +123,10 @@ export class AzureTokenValidationService {
     ).data;
   }
 
-  private verifyToken(accessToken: string, key: string): JwtPayload {
+  private verifyToken(
+    accessToken: string,
+    key: string,
+  ): JwtPayload & { appid?: string } {
     const data = verify(accessToken, key);
     return data as JwtPayload;
   }
