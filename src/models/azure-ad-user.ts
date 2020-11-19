@@ -7,17 +7,21 @@ export class AzureAdUser {
   readonly roles: string[];
   readonly audience: string;
   readonly tenant: string;
+  readonly subject: string;
+  readonly appId?: string;
 
-  constructor(jwt?: JwtPayload) {
+  constructor(jwt?: JwtPayload & { appid?: string }) {
     if (!jwt) {
       jwt = {} as JwtPayload;
     }
 
-    this.email = jwt.upn;
-    this.fullName = jwt.name;
+    this.email = jwt.upn ?? `ClientCredentialsToken|${jwt.appid ?? ''}`;
+    this.fullName = jwt.name ?? `ClientCredentialsToken|${jwt.appid ?? ''}`;
     this.id = jwt.oid;
     this.roles = jwt.roles;
     this.audience = jwt.aud;
     this.tenant = jwt.tid;
+    this.subject = jwt.sub;
+    this.appId = jwt.appid;
   }
 }

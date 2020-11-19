@@ -49,6 +49,20 @@ describe('AzureTokenValidationService', () => {
     uti: '0474e873-cf17-48e5-bf7b-b7763482b78d',
     ver: '1.0',
   };
+  const mockClientCredential: JwtPayload & { appid?: string } = {
+    aud: '00000002-0000-0000-c000-000000000000',
+    iss: `https://sts.windows.net/${tenantToken}/`,
+    iat: 1602201716,
+    nbf: 1602201716,
+    exp: 1602205616,
+    aio: 'E2RgYPhhmKl24+2xzYsLRQ97+F4OAwA=',
+    appid: audienceToken,
+    oid: '8ae984ed-d502-41da-8594-ff74c84d8526',
+    sub: '8ae984ed-d502-41da-8594-ff74c84d8526',
+    tid: tenantToken,
+    uti: '5LV9VLNjxEeeYn7ASmZkAA',
+    ver: '1.0',
+  } as any;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -101,8 +115,15 @@ describe('AzureTokenValidationService', () => {
       verifyMock.mockReturnValue(mockUser as any);
       const response = await service.isTokenValid(testToken);
       const response2 = await service.isTokenValid(testToken2);
-      expect(response).toBeTruthy();
+      expect(response[0]).toBeTruthy();
       expect(getTokensMock).toHaveBeenCalledTimes(2);
+      expect(verifyMock).toHaveBeenCalledTimes(1);
+    });
+    it('should work with the Client Credentials Flow', async () => {
+      verifyMock.mockReturnValue(mockClientCredential);
+      const response = await service.isTokenValid(testToken);
+      expect(response[0]).toBeTruthy();
+      expect(getTokensMock).toHaveBeenCalledTimes(1);
       expect(verifyMock).toHaveBeenCalledTimes(1);
     });
     it('should return false on expired Azure token and invalid service token', async () => {
