@@ -32,7 +32,7 @@ export class NestAzureAdJwtValidatorModule {
       ],
     };
   }
-  
+
   static forRootAsync(
     options: AsyncProvider<Partial<NestAzureAdJwtValidatorModuleOptions> | Promise<Partial<NestAzureAdJwtValidatorModuleOptions>>>,
   ): DynamicModule {
