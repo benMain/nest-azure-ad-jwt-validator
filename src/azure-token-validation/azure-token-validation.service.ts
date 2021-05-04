@@ -64,11 +64,9 @@ export class AzureTokenValidationService {
       const user = new AzureAdUser(payload);
       const matchingTenantApp = this.options.apps.some(
         (a) =>
-          (
-            `api://${a.audienceId}` === user.audience ||
+          (`api://${a.audienceId}` === user.audience ||
             a.audienceId === user.audience ||
-            a.audienceId === user.appId
-          ) &&
+            a.audienceId === user.appId) &&
           a.tenantId === user.tenant,
       );
       return matchingTenantApp ? user : null;
