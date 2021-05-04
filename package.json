@@ -39,10 +39,10 @@
     "release-local": "node -r dotenv/config node_modules/semantic-release/bin/semantic-release --no-ci --dry-run"
   },
   "dependencies": {
+    "@nestjs/common": "^7.0.8",
     "jsonwebtoken": "^8.5.1"
   },
   "peerDependencies": {
-    "@nestjs/common": "^7.0.8",
     "@nestjs/core": "^7.0.8",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
