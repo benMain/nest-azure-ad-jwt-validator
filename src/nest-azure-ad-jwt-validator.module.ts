@@ -1,8 +1,12 @@
+import {
+  AsyncProvider,
+  ImportableFactoryProvider,
+  NestAzureAdJwtValidatorModuleOptions,
+} from './module-config';
 import { DynamicModule, Global, HttpModule, Module } from '@nestjs/common';
 
 import { AzureActiveDirectoryGuard } from './guards/azure-active-directory.guard';
 import { AzureTokenValidationService } from './azure-token-validation/azure-token-validation.service';
-import { NestAzureAdJwtValidatorModuleOptions, AsyncProvider, ImportableFactoryProvider } from './module-config';
 
 @Global()
 @Module({
@@ -34,7 +38,10 @@ export class NestAzureAdJwtValidatorModule {
   }
 
   static forRootAsync(
-    options: AsyncProvider<Partial<NestAzureAdJwtValidatorModuleOptions> | Promise<Partial<NestAzureAdJwtValidatorModuleOptions>>>,
+    options: AsyncProvider<
+      | Partial<NestAzureAdJwtValidatorModuleOptions>
+      | Promise<Partial<NestAzureAdJwtValidatorModuleOptions>>
+    >,
   ): DynamicModule {
     const configToken = 'AZURE_CONFIG';
     const module: DynamicModule = {
@@ -46,20 +53,27 @@ export class NestAzureAdJwtValidatorModule {
         AzureActiveDirectoryGuard,
         {
           provide: NestAzureAdJwtValidatorModuleOptions,
-          useFactory: async (config: Partial<NestAzureAdJwtValidatorModuleOptions>) => {
+          useFactory: async (
+            config: Partial<NestAzureAdJwtValidatorModuleOptions>,
+          ) => {
             return new NestAzureAdJwtValidatorModuleOptions(config);
           },
-          inject: [configToken]
-        }
+          inject: [configToken],
+        },
       ],
       exports: [
         AzureTokenValidationService,
         AzureActiveDirectoryGuard,
         NestAzureAdJwtValidatorModuleOptions,
-      ]
+      ],
     };
 
-    this.addAsyncProvider<Partial<NestAzureAdJwtValidatorModuleOptions>>(module, configToken, options, false);
+    this.addAsyncProvider<Partial<NestAzureAdJwtValidatorModuleOptions>>(
+      module,
+      configToken,
+      options,
+      false,
+    );
     return module;
   }
 
