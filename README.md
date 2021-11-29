@@ -42,6 +42,7 @@ import { Module } from '@nestjs/common';
       ],
       serviceTokens: ['random-string-generated-by-you'], // option - used to allow service-to-service communication, ala AWS x-api-key
       enableDebugLogs: true, // optional - false by default
+      tokenHeader: 'authorization' // The Header in which the jwt appears defaults to 'authtoken' by default.
     }),
   ],
   controllers: [AppController],

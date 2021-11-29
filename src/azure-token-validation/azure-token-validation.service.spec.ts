@@ -87,7 +87,7 @@ describe('AzureTokenValidationService', () => {
       AzureTokenValidationService,
     );
     httpService = module.get<HttpService>(HttpService);
-    servicePrivate = (service as any) as AzureTokenValidationServicePrivate;
+    servicePrivate = service as any as AzureTokenValidationServicePrivate;
     verifyMock = jest.spyOn(servicePrivate, 'verifyToken');
     getTokensMock = jest.spyOn(httpService, 'get');
     getTokensMock.mockReturnValue(
@@ -116,6 +116,7 @@ describe('AzureTokenValidationService', () => {
       const response = await service.isTokenValid(testToken);
       const response2 = await service.isTokenValid(testToken2);
       expect(response[0]).toBeTruthy();
+      expect(response2[0]).toBeFalsy();
       expect(getTokensMock).toHaveBeenCalledTimes(2);
       expect(verifyMock).toHaveBeenCalledTimes(1);
     });
@@ -132,6 +133,8 @@ describe('AzureTokenValidationService', () => {
         testToken,
       );
       expect(response).toBeFalsy();
+      expect(user).toBeFalsy();
+      expect(isServiceToken).toBeTruthy();
       expect(getTokensMock).toHaveBeenCalledTimes(1);
       expect(verifyMock).toHaveBeenCalledTimes(1);
     });
@@ -141,6 +144,8 @@ describe('AzureTokenValidationService', () => {
         'fdae',
       );
       expect(response).toBeFalsy();
+      expect(user).toBeFalsy();
+      expect(isServiceToken).toBeTruthy();
       expect(getTokensMock).toHaveBeenCalledTimes(1);
       expect(verifyMock).toHaveBeenCalledTimes(0);
     });

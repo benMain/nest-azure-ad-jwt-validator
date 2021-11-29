@@ -1,17 +1,9 @@
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { AzureAdUser, JwtKey, JwtPayload } from '../models';
-import {
-  Controller,
-  ExecutionContext,
-  Get,
-  HttpService,
-  Injectable,
-  Module,
-  SetMetadata,
-} from '@nestjs/common';
+import { ExecutionContext, HttpService, SetMetadata } from '@nestjs/common';
 import { Observable, Observer } from 'rxjs';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { AxiosResponse } from 'axios';
 import { AzureActiveDirectoryGuard } from './azure-active-directory.guard';
 import { AzureTokenValidationService } from '../azure-token-validation';
 import { NestAzureAdJwtValidatorModuleOptions } from '../module-config';
@@ -19,10 +11,6 @@ import { Reflector } from '@nestjs/core';
 import { readFileSync } from 'fs';
 
 export const Roles = (...roles: string[]) => SetMetadata('roles', roles);
-
-interface AzureTokenValidationServicePrivate {
-  verifyToken: () => JwtPayload;
-}
 
 describe('AzureActiveDirectoryGuard', () => {
   let guard: AzureActiveDirectoryGuard;
@@ -147,6 +135,7 @@ describe('AzureActiveDirectoryGuard', () => {
       expect(canActivate).toEqual(true);
       expect(tokenValidateMock).toHaveBeenCalledTimes(1);
       expect(tokenValidateMock).toHaveBeenCalledWith('12345A');
+      expect(getAzureUserFromTokenMock).not.toHaveBeenCalled();
     });
     it('should activate for valid token with roles', async () => {
       tokenValidateMock.mockResolvedValue([true, mockUser as any, false]);
