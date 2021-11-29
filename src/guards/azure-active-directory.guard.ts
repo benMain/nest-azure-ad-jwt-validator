@@ -1,7 +1,6 @@
 import {
   CanActivate,
   ExecutionContext,
-  Inject,
   Injectable,
   Logger,
 } from '@nestjs/common';
@@ -22,11 +21,8 @@ export class AzureActiveDirectoryGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const accessToken = this.parseTokenFromContext(context);
-    const [
-      isTokenValid,
-      user,
-      isServiceToken,
-    ] = await this.tokenValidationService.isTokenValid(accessToken);
+    const [isTokenValid, user, isServiceToken] =
+      await this.tokenValidationService.isTokenValid(accessToken);
 
     // token is not valid exit
     if (!isTokenValid) {
@@ -50,11 +46,9 @@ export class AzureActiveDirectoryGuard implements CanActivate {
 
   private parseTokenFromContext(context: ExecutionContext): string {
     const request = context.switchToHttp().getRequest<IncomingMessage>();
-    const tokenHeader = request.headers.authtoken;
-    return (!!tokenHeader ? tokenHeader.toString() : '')
-      .trim()
-      .split(' ')
-      .pop();
+    const header = this.options.tokenHeader ?? 'authtoken';
+    const token = request.headers[header];
+    return (!!token ? token.toString() : '').trim().split(' ').pop();
   }
 
   private matchRoles(roles: string[], usersRoles: string[]) {
