@@ -1,5 +1,6 @@
 import { AzureAdUser, JwtKey, JwtPayload } from '../models';
-import { ExecutionContext, HttpService, SetMetadata } from '@nestjs/common';
+import { ExecutionContext, SetMetadata } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import { Observable, Observer } from 'rxjs';
 import { Test, TestingModule } from '@nestjs/testing';
 

@@ -3,7 +3,8 @@ import {
   ImportableFactoryProvider,
   NestAzureAdJwtValidatorModuleOptions,
 } from './module-config';
-import { DynamicModule, Global, HttpModule, Module } from '@nestjs/common';
+import { DynamicModule, Global, Module } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
 
 import { AzureActiveDirectoryGuard } from './guards/azure-active-directory.guard';
 import { AzureTokenValidationService } from './azure-token-validation/azure-token-validation.service';
