@@ -1,7 +1,8 @@
 import { AzureAdUser, JwtKey, JwtPayload, TokenHeader } from '../models';
-import { HttpService, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 import { EOL } from 'os';
+import { HttpService } from '@nestjs/axios';
 import { NestAzureAdJwtValidatorModuleOptions } from '../module-config';
 import { verify } from 'jsonwebtoken';
 
