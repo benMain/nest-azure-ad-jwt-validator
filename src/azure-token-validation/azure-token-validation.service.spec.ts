@@ -4,7 +4,7 @@ import { Observable, Observer } from 'rxjs';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { AzureTokenValidationService } from './azure-token-validation.service';
-import { HttpService } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import { NestAzureAdJwtValidatorModuleOptions } from '../module-config';
 import { readFileSync } from 'fs';
 
