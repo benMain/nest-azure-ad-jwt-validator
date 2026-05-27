@@ -103,8 +103,8 @@ describe('AzureActiveDirectoryGuard', () => {
             data: getDiscoveryKeys(),
             status: 200,
             statusText: 'success',
-            headers: null,
-            config: null,
+            headers: {} as any,
+            config: {} as any,
           });
           observer.complete();
         },

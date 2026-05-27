@@ -48,7 +48,7 @@ export class AzureActiveDirectoryGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<IncomingMessage>();
     const header = this.options.tokenHeader ?? 'authtoken';
     const token = request.headers[header];
-    return (!!token ? token.toString() : '').trim().split(' ').pop();
+    return (token ? token.toString() : '').trim().split(' ').pop();
   }
 
   private matchRoles(roles: string[], usersRoles: string[]) {

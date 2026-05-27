@@ -4,6 +4,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { EOL } from 'os';
 import { HttpService } from '@nestjs/axios';
 import { NestAzureAdJwtValidatorModuleOptions } from '../module-config';
+import { lastValueFrom } from 'rxjs';
 import { verify } from 'jsonwebtoken';
 
 @Injectable()
@@ -117,13 +118,12 @@ export class AzureTokenValidationService {
   }
 
   private async getAzureKeys(): Promise<{ keys: JwtKey[] }> {
-    return (
-      await this.httpService
-        .get<{ keys: JwtKey[] }>(
-          'https://login.microsoftonline.com/common/discovery/keys',
-        )
-        .toPromise()
-    ).data;
+    const response = await lastValueFrom(
+      this.httpService.get<{ keys: JwtKey[] }>(
+        'https://login.microsoftonline.com/common/discovery/keys',
+      ),
+    );
+    return response.data;
   }
 
   private verifyToken(
@@ -144,7 +144,7 @@ export class AzureTokenValidationService {
     const decodedToken = buffer.toString('utf8');
     try {
       return JSON.parse(decodedToken) as TokenHeader;
-    } catch (ex) {
+    } catch {
       this.logger.debug('Processing as service token, not as access token.');
       return null;
     }
